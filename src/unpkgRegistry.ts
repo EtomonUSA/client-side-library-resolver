@@ -3,6 +3,9 @@ import { StatusCodeError } from 'request-promise-native/errors';
 import Registry, { LibraryDoesNotExist, VersionDoesNotMatch, NoMinifiedPath } from './Registry';
 import Library, { specialFiles, specialVersions } from './Library';
 
+/**
+ * Represents the unpkg.com registry.
+ */
 export default class unpkgRegistry extends Registry {
     protected request: request.RequestPromiseAPI;
     protected unpkgUrlBase: string = 'https://unpkg.com';

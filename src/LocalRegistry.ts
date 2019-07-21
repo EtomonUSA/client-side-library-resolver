@@ -4,7 +4,14 @@ import * as fs from 'fs-extra';
 import Registry, { LibraryDoesNotExist, VersionDoesNotMatch, NoMain, NoMinifiedPath } from './Registry';
 import Library, { specialFiles, specialVersions } from './Library';
 
+/**
+ * Represents the local `node_modules` folder or any other `node_modules` folder in the module path. 
+ */
 export default class LocalRegistry extends Registry {
+    /**
+     * 
+     * @param dirs - Directories to search for libraries in. Defaults to `module.paths`. 
+     */
     constructor(protected dirs = module.paths) {
         super();
     }
@@ -18,6 +25,9 @@ export default class LocalRegistry extends Registry {
         return JSON.parse(await fs.readFile(path.join(libDir, 'package.json'), 'utf8'));
     }
 
+    /**
+     * Retrieves the full path to the directory containing a given library
+     */
     protected async getLibDir(lib: Library) {
         const modulesDirs = (
             await Promise.all(this.dirs.map(async (dir) => {
@@ -60,6 +70,7 @@ export default class LocalRegistry extends Registry {
         return libPath;
     }
 
+
     public async getMinifiedPath(lib: Library): Promise<string> {
         if (!lib.minifiedPath) 
             throw new NoMinifiedPath(lib);
@@ -82,6 +93,7 @@ export default class LocalRegistry extends Registry {
 
         return libPath;
     }
+
 
     public async get(lib: Library): Promise<string> {
         const libPath = await this.getPath(lib);
