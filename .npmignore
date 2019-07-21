@@ -1,0 +1,9 @@
+src
+.DS_Store
+.vscode
+node_modules
+tscommand*
+test
+docs
+.docs
+.tscache
