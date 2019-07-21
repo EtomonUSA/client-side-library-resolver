@@ -2,6 +2,7 @@ import * as request from 'request-promise-native';
 import { StatusCodeError } from 'request-promise-native/errors';
 import Registry, { LibraryDoesNotExist, VersionDoesNotMatch, NoMinifiedPath } from './Registry';
 import Library, { specialFiles, specialVersions } from './Library';
+import MinifiedLibrary from './MinifiedLibrary';
 
 export default class unpkgRegistry extends Registry {
     protected request: request.RequestPromiseAPI;
@@ -35,14 +36,14 @@ export default class unpkgRegistry extends Registry {
         let url;
         try {
             
-            if (lib.version === specialVersions.latest && lib.path === specialFiles.mainFile) {
+            if (lib.version === specialVersions.latest && lib.mainPath === specialFiles.mainFile) {
                 url = `${this.unpkgUrlBase}/${lib.name}`;
-            } else if (lib.path === specialFiles.mainFile) {
+            } else if (lib.mainPath === specialFiles.mainFile) {
                 url = `${this.unpkgUrlBase}/${lib.name}@${lib.version}`;
             } else {
                 const packageJson = await this.getManifest(lib);
 
-                let mainPath = (lib.path !== specialFiles.mainFile) ? lib.path : ('/' + packageJson.main);
+                let mainPath = (lib.mainPath !== specialFiles.mainFile) ? lib.mainPath : ('/' + packageJson.main);
                 url = `${this.unpkgUrlBase}/${lib.name}@${lib.version}${mainPath}`
             }
 
@@ -61,7 +62,7 @@ export default class unpkgRegistry extends Registry {
         }
     }
 
-    public async getMinifiedPath(lib: Library): Promise<string> {
+    public async getMinifiedPath(lib: MinifiedLibrary): Promise<string> {
         let url;
 
         if (!lib.minifiedPath)
@@ -94,7 +95,7 @@ export default class unpkgRegistry extends Registry {
         });
     }
 
-    async getMinified(lib: Library): Promise<string> {
+    async getMinified(lib: MinifiedLibrary): Promise<string> {
         try {
             const url = await this.getMinifiedPath(lib);
             

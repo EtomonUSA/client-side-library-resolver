@@ -2,43 +2,132 @@ import * as path from 'path';
 import * as chai from 'chai';
 import * as fs from 'fs-extra';
 import * as uglify from 'uglify-js';
+import memdown from 'memdown';
 import * as chaiAsPromised from 'chai-as-promised';
 import * as Chance from 'chance';
-import LocalRegistry from '../src/LocalRegistry';
+import DummyRegistry, { JQ_DIR, JQ_FULL, JQ_MIN, JQ_PATH_FULL, JQ_PATH_MIN, JQ_PATH_PKG, JQ_PKG } from './DummyRegistry';
+import LevelUpCache from '../src/LevelUpCache';
 import { LibraryDoesNotExist, VersionDoesNotMatch, NoMain, NoMinifiedPath } from '../src/Registry';
 import Library, { specialFiles } from '../src/Library';
 import MinifiedLibrary from '../src/MinifiedLibrary';
 
 import 'mocha';
 
+const chance = new Chance();
+const pool = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+const sepPool = '!@#$%^&*:;+-';
 chai.use(chaiAsPromised);
 
 const { assert } = chai;
 
-const chance = new Chance();
+describe('LevelUpCache', function () {
+    let cache: LevelUpCache, registry: DummyRegistry;
 
-const modulesDir = path.join(__dirname, '..', 'node_modules');
+    this.beforeEach(function () {
+        registry = new DummyRegistry();
+        cache = new LevelUpCache(registry, 5000, memdown());
+    });
 
-describe('LocalRegistry', function () {
-    
-    describe('getLibDir', function () {
-        it(`should return undefined if the library doesn't exist`, async function () {
-            const local = new LocalRegistry([ modulesDir ]);
-            const lib = new Library(chance.string({ length: 2 }), chance.string(), chance.string());
+    describe('formatKey', function () {
+        it(`should return the prefix lib name, lib version and lib main path`, function () {
+            const name = chance.string({ pool });
+            const version = chance.string({ pool });
+            const mainPath = chance.string({ pool });
+            const prefix = chance.string({ pool });
+            const sep = chance.character({ pool: sepPool });
 
-            const result = await (<any>local).getLibDir(lib);
+            const lib = new Library(name, version, mainPath);
+            const key = (<any>cache).formatKey(lib, [], prefix);
 
-            assert.isUndefined(result);
+            assert.equal([ prefix, name, version, mainPath ].join(sep), key);
         });
 
-        it(`should return the path to the library if it exists in the module path`, async function () {
-            const local = new LocalRegistry([ modulesDir ]);
-            const lib = new Library('jquery', chance.string(), chance.string());
+        it(`should return the prefix lib name, lib version and lib main path, plus any extra entries`, function () {
+            const name = chance.string({ pool });
+            const version = chance.string({ pool });
+            const mainPath = chance.string({ pool });
+            const prefix = chance.string({ pool });
+            const sep = chance.character({ pool: sepPool });
+            
+            const extra = [];
+            let i = 0;
 
-            const result = await (<any>local).getLibDir(lib);
-            const actualLibDir = path.join(modulesDir, 'jquery');
+            while (i < 15) {
+                extra.push(chance.string({ pool }));
+                i++;
+            }
 
-            assert.equal(actualLibDir, result);
+            const lib = new Library(name, version, mainPath);
+            const key = (<any>cache).formatKey(lib, extra, prefix);
+
+            assert.equal([ prefix, name, version, mainPath ].concat(extra).join(sep), key);
+        });
+
+
+        it(`should return the prefix lib name, lib version, lib main path, the minified path plus any extra entries`, function () {
+            const name = chance.string({ pool });
+            const version = chance.string({ pool });
+            const mainPath = chance.string({ pool });
+            const minPath = chance.string({ pool });
+            const prefix = chance.string({ pool });
+            const sep = chance.character({ pool: sepPool });
+            
+            const extra = [];
+            let i = 0;
+
+            while (i < 15) {
+                extra.push(chance.string({ pool }));
+                i++;
+            }
+
+            const lib = new MinifiedLibrary(name, version, mainPath, minPath);
+            const key = (<any>cache).formatKey(lib, extra, prefix);
+
+            assert.equal([ prefix, name, version, mainPath ].concat(extra).join(sep), key);
+        });
+
+    });
+
+
+    describe('setCache', function () {
+        it('should set the cache with a given value', async function () {
+            const key = chance.string({ pool });
+            const realValue = chance.string({ length: 250 });
+
+            await (<any>cache).setCache(key, realValue);
+
+            let value;
+            let fn = () => {};
+            try {
+                value = await (<any>cache).db.get(key);
+            } catch (err) {
+                fn = () => { throw err; }
+            } finally {
+                assert.doesNotThrow(fn);
+
+                assert.equal(realValue, value);
+            }
+        });
+    });
+
+    describe('getCache', function () {
+        it('should retrieve a given value from the cache', async function () {
+            const key = chance.string({ pool });
+            const realValue = chance.string({ length: 250 });
+
+            await (<any>cache).db.put(key, realValue);
+
+            let value;
+            let fn = () => {};
+            try {
+                value = await (<any>cache).db.get(key);
+            } catch (err) {
+                fn = () => { throw err; }
+            } finally {
+                assert.doesNotThrow(fn);
+
+                assert.equal(realValue, value);
+            }
         });
     });
 

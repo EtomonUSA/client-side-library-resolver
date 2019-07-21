@@ -1,16 +1,15 @@
 import * as path from 'path';
 import * as request from 'request-promise-native';
 import * as chai from 'chai';
-import * as fs from 'fs-extra';
 import * as uglify from 'uglify-js';
 import * as chaiAsPromised from 'chai-as-promised';
 import * as Chance from 'chance';
-import * as lodash from 'lodash';
 import unpkgRegistry from '../src/unpkgRegistry';
 import { LibraryDoesNotExist, NoMinifiedPath } from '../src/Registry';
 import Library, { specialFiles } from '../src/Library';
 
 import 'mocha';
+import MinifiedLibrary from '../src/MinifiedLibrary';
 
 chai.use(chaiAsPromised);
 
@@ -98,7 +97,7 @@ describe('unpkgRegistry', function () {
     describe('getMinifiedPath', function () {
         it(`should throw LibraryDoesNotExist if a library is passed whose URL cannot be found`, async function () {
             const local = new unpkgRegistry();
-            const lib = new Library(chance.string({ length: 25, pool }), chance.string({ length: 25, pool }), chance.string({ length: 25, pool }), chance.string({ length: 25, pool }));
+            const lib = new MinifiedLibrary(chance.string({ length: 25, pool }), chance.string({ length: 25, pool }), chance.string({ length: 25, pool }), chance.string({ length: 25, pool }));
 
             const p = local.getMinifiedPath(lib);
 
@@ -107,7 +106,7 @@ describe('unpkgRegistry', function () {
 
         it(`should throw LibraryDoesNotExist if a library is passed whose directory can be found, but version does not match the version requested`, async function () {
             const local = new unpkgRegistry();
-            const lib = new Library('jquery', chance.string({ length: 25, pool  }), specialFiles.mainFile, '/dist/jquery.min.js');
+            const lib = new MinifiedLibrary('jquery', chance.string({ length: 25, pool  }), specialFiles.mainFile, '/dist/jquery.min.js');
 
             const p = local.getMinifiedPath(lib);
 
@@ -116,7 +115,7 @@ describe('unpkgRegistry', function () {
 
         it(`should return the path to the library's minified file`, async function () {
             const local = new unpkgRegistry();
-            const lib = new Library('jquery', 'latest', '/dist/jquery.js', '/dist/jquery.min.js');
+            const lib = new MinifiedLibrary('jquery', 'latest', '/dist/jquery.js', '/dist/jquery.min.js');
 
             const response = await request({
                 method: 'HEAD',
@@ -134,7 +133,7 @@ describe('unpkgRegistry', function () {
 
         it(`should throw NoMinifiedPath if a minified library is requested but no minified path has been specified`, async function () {
             const local = new unpkgRegistry();
-            const lib = new Library('jquery');
+            const lib = new MinifiedLibrary('jquery');
 
             const p = local.getMinifiedPath(lib);
 
@@ -143,7 +142,7 @@ describe('unpkgRegistry', function () {
 
         it(`should throw LibraryDoesNotExist if a minified library is requested but the minified path does not exist`, async function () {
             const local = new unpkgRegistry();
-            const lib = new Library('jquery', 'latest', specialFiles.mainFile, chance.string({ length: 3 }));
+            const lib = new MinifiedLibrary('jquery', 'latest', specialFiles.mainFile, chance.string({ length: 3 }));
 
             const p = local.getMinifiedPath(lib);
 
@@ -153,7 +152,7 @@ describe('unpkgRegistry', function () {
 
         it(`should return the minified path if it exists`, async function () {
             const local = new unpkgRegistry();
-            const lib = new Library('jquery', 'latest', specialFiles.mainFile, '/dist/jquery.min.js');
+            const lib = new MinifiedLibrary('jquery', 'latest', specialFiles.mainFile, '/dist/jquery.min.js');
 
             const response = await request({
                 method: 'HEAD',
@@ -233,7 +232,7 @@ describe('unpkgRegistry', function () {
         this.timeout(10000);
         it('should return the minified library if the library exists at a given version', async function () {
             const local = new unpkgRegistry();
-            const lib = new Library('jquery', '3.4.1', specialFiles.mainFile, '/dist/jquery.min.js');
+            const lib = new MinifiedLibrary('jquery', '3.4.1', specialFiles.mainFile, '/dist/jquery.min.js');
 
             const realJq = await request({
                 method: 'GET',
@@ -248,7 +247,7 @@ describe('unpkgRegistry', function () {
 
         it('should return the minified library if the library if no version is provided', async function () {
             const local = new unpkgRegistry();
-            const lib = new Library('jquery', void(0), specialFiles.mainFile, '/dist/jquery.min.js');
+            const lib = new MinifiedLibrary('jquery', void(0), specialFiles.mainFile, '/dist/jquery.min.js');
 
             const realJq = await request({
                 method: 'GET',
@@ -263,7 +262,7 @@ describe('unpkgRegistry', function () {
 
         it('should return the minified library if the library if no minified path is provided but the main path is provided', async function () {
             const local = new unpkgRegistry();
-            const lib = new Library('jquery', '3.4.1', specialFiles.mainFile);
+            const lib = new MinifiedLibrary('jquery', '3.4.1', specialFiles.mainFile);
 
             let realJq = await request({
                 method: 'GET',
@@ -280,7 +279,7 @@ describe('unpkgRegistry', function () {
 
         it('should return the minified library if the library if no path is provided', async function () {
             const local = new unpkgRegistry();
-            const lib = new Library('jquery', '3.4.1', void(0));
+            const lib = new MinifiedLibrary('jquery', '3.4.1', void(0));
 
             let realJq = await request({
                 method: 'GET',
@@ -297,7 +296,7 @@ describe('unpkgRegistry', function () {
 
         it('should return the minified library if the library if no path and version is provided', async function () {
             const local = new unpkgRegistry([ modulesDir ]);
-            const lib = new Library('jquery', void(0), void(0), void(0));
+            const lib = new MinifiedLibrary('jquery', void(0), void(0), void(0));
 
             let realJq = await request({
                 method: 'GET',

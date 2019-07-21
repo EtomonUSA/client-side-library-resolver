@@ -10,8 +10,7 @@ export default class Library {
     constructor(
         public name: string, 
         public version: string|specialVersions = specialVersions.latest,
-        public path: string|specialFiles = specialFiles.mainFile,
-        public minifiedPath?: string
+        public mainPath: string|specialFiles = specialFiles.mainFile
     ) {
 
     }

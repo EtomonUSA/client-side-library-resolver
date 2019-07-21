@@ -3,6 +3,7 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 import Registry, { LibraryDoesNotExist, VersionDoesNotMatch, NoMain, NoMinifiedPath } from './Registry';
 import Library, { specialFiles, specialVersions } from './Library';
+import MinifiedLibrary from './MinifiedLibrary';
 
 export default class LocalRegistry extends Registry {
     constructor(protected dirs = module.paths) {
@@ -47,11 +48,10 @@ export default class LocalRegistry extends Registry {
         }
 
         const libPath = path.join(libDir, (
-            lib.path === specialFiles.mainFile ?
+            lib.mainPath === specialFiles.mainFile ?
             packageJson.main :
-            lib.path
+            lib.mainPath
         ));
-
 
         if (!packageJson.main || !(await fs.pathExists(libPath))) {
             throw new NoMain(lib);
@@ -60,7 +60,7 @@ export default class LocalRegistry extends Registry {
         return libPath;
     }
 
-    public async getMinifiedPath(lib: Library): Promise<string> {
+    public async getMinifiedPath(lib: MinifiedLibrary): Promise<string> {
         if (!lib.minifiedPath) 
             throw new NoMinifiedPath(lib);
 
@@ -89,7 +89,7 @@ export default class LocalRegistry extends Registry {
         return await fs.readFile(libPath, 'utf8');
     }
 
-    public async getMinified(lib: Library): Promise<string> {
+    public async getMinified(lib: MinifiedLibrary): Promise<string> {
         try {
             const libPath = await this.getMinifiedPath(lib);
             

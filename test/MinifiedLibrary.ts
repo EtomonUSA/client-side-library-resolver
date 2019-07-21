@@ -1,7 +1,7 @@
 import { assert } from 'chai';
 import * as Chance from 'chance';
-import Library from '../src/Library';
 import 'mocha';
+import MinifiedLibrary from '../src/MinifiedLibrary';
 
 const chance = new Chance();
 
@@ -11,11 +11,13 @@ describe('Library', function () {
             const name = chance.string();
             const version = chance.string();
             const mainPath = chance.string();
-            const lib = new Library(name, version, mainPath);
+            const minPath = chance.string();
+            const lib = new MinifiedLibrary(name, version, mainPath, minPath);
 
             assert.equal(name, lib.name);
             assert.equal(version, lib.version);
             assert.equal(mainPath, lib.mainPath);
+            assert.equal(minPath, lib.minifiedPath);
         });
     });
 });
