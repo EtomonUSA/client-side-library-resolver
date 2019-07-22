@@ -69,6 +69,13 @@
 <div class="container container-main">
 	<div class="row">
 		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<p>Represents a single software package within the repository. Can either be CSS or JS.</p>
+					</div>
+				</div>
+			</section>
 			<section class="tsd-panel tsd-hierarchy">
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
@@ -90,6 +97,7 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="_library_.library.html#filetype" class="tsd-kind-icon">file<wbr>Type</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="_library_.library.html#minifiedpath" class="tsd-kind-icon">minified<wbr>Path</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="_library_.library.html#name" class="tsd-kind-icon">name</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="_library_.library.html#path" class="tsd-kind-icon">path</a></li>
@@ -105,28 +113,58 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Library<span class="tsd-signature-symbol">(</span>name<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, version<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="../enums/_library_.specialversions.html" class="tsd-signature-type">specialVersions</a>, path<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="../enums/_library_.specialfiles.html" class="tsd-signature-type">specialFiles</a>, minifiedPath<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="_library_.library.html" class="tsd-signature-type">Library</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Library<span class="tsd-signature-symbol">(</span>name<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, version<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="../enums/_library_.specialversions.html" class="tsd-signature-type">SpecialVersions</a>, path<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="../enums/_library_.specialfiles.html" class="tsd-signature-type">SpecialFiles</a>, minifiedPath<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span>, fileType<span class="tsd-signature-symbol">?: </span><a href="../enums/_library_.filetypes.html" class="tsd-signature-type">FileTypes</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="_library_.library.html" class="tsd-signature-type">Library</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/znetstar/client-side-library-resolver/blob/3725032/src/Library.ts#L9">Library.ts:9</a></li>
+									<li>Defined in <a href="https://github.com/znetstar/client-side-library-resolver/blob/631b2aa/src/Library.ts#L38">Library.ts:38</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
 									<h5>name: <span class="tsd-signature-type">string</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<div class="lead">
+											<p>Name of the software package (e.g. <code>bootstrap</code>).</p>
+										</div>
+									</div>
 								</li>
 								<li>
-									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> version: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="../enums/_library_.specialversions.html" class="tsd-signature-type">specialVersions</a><span class="tsd-signature-symbol"> =&nbsp;specialVersions.latest</span></h5>
+									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> version: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="../enums/_library_.specialversions.html" class="tsd-signature-type">SpecialVersions</a><span class="tsd-signature-symbol"> =&nbsp;SpecialVersions.latest</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<div class="lead">
+											<p>The version of the software to match against. Should be semver compatible (e.g. <code>1.0.0</code>, <code>1</code> or <code>latest</code>). Defaults to <code>latest</code>.</p>
+										</div>
+									</div>
 								</li>
 								<li>
-									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> path: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="../enums/_library_.specialfiles.html" class="tsd-signature-type">specialFiles</a><span class="tsd-signature-symbol"> =&nbsp;specialFiles.mainFile</span></h5>
+									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> path: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="../enums/_library_.specialfiles.html" class="tsd-signature-type">SpecialFiles</a><span class="tsd-signature-symbol"> =&nbsp;SpecialFiles.mainFile</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<div class="lead">
+											<p>Path to the main (non-minified) copy of the file. Defaults to the <code>main</code> property in the package.json file.</p>
+										</div>
+									</div>
 								</li>
 								<li>
 									<h5><span class="tsd-flag ts-flagOptional">Optional</span> minifiedPath: <span class="tsd-signature-type">string</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<div class="lead">
+											<p>Path to the minified copy of the file. Will attempt to minify the file at the <code>main</code> path if not provided.</p>
+										</div>
+									</div>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> fileType: <a href="../enums/_library_.filetypes.html" class="tsd-signature-type">FileTypes</a><span class="tsd-signature-symbol"> =&nbsp;FileTypes.js</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<div class="lead">
+											<p>Indicates the file type of the library, defaults to <code>js</code>.</p>
+										</div>
+									</div>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <a href="_library_.library.html" class="tsd-signature-type">Library</a></h4>
@@ -137,14 +175,34 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="filetype" class="tsd-anchor"></a>
+					<h3>file<wbr>Type</h3>
+					<div class="tsd-signature tsd-kind-icon">file<wbr>Type<span class="tsd-signature-symbol">:</span> <a href="../enums/_library_.filetypes.html" class="tsd-signature-type">FileTypes</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/znetstar/client-side-library-resolver/blob/631b2aa/src/Library.ts#L53">Library.ts:53</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Indicates the file type of the library, defaults to <code>js</code>.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="minifiedpath" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagOptional">Optional</span> minified<wbr>Path</h3>
 					<div class="tsd-signature tsd-kind-icon">minified<wbr>Path<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/znetstar/client-side-library-resolver/blob/3725032/src/Library.ts#L14">Library.ts:14</a></li>
+							<li>Defined in <a href="https://github.com/znetstar/client-side-library-resolver/blob/631b2aa/src/Library.ts#L52">Library.ts:52</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Path to the minified copy of the file. Will attempt to minify the file at the <code>main</code> path if not provided.</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="name" class="tsd-anchor"></a>
@@ -152,29 +210,44 @@
 					<div class="tsd-signature tsd-kind-icon">name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/znetstar/client-side-library-resolver/blob/3725032/src/Library.ts#L11">Library.ts:11</a></li>
+							<li>Defined in <a href="https://github.com/znetstar/client-side-library-resolver/blob/631b2aa/src/Library.ts#L49">Library.ts:49</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Name of the software package (e.g. <code>bootstrap</code>).</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="path" class="tsd-anchor"></a>
 					<h3>path</h3>
-					<div class="tsd-signature tsd-kind-icon">path<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="../enums/_library_.specialfiles.html" class="tsd-signature-type">specialFiles</a></div>
+					<div class="tsd-signature tsd-kind-icon">path<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="../enums/_library_.specialfiles.html" class="tsd-signature-type">SpecialFiles</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/znetstar/client-side-library-resolver/blob/3725032/src/Library.ts#L13">Library.ts:13</a></li>
+							<li>Defined in <a href="https://github.com/znetstar/client-side-library-resolver/blob/631b2aa/src/Library.ts#L51">Library.ts:51</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Path to the main (non-minified) copy of the file. Defaults to the <code>main</code> property in the package.json file.</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="version" class="tsd-anchor"></a>
 					<h3>version</h3>
-					<div class="tsd-signature tsd-kind-icon">version<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="../enums/_library_.specialversions.html" class="tsd-signature-type">specialVersions</a></div>
+					<div class="tsd-signature tsd-kind-icon">version<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="../enums/_library_.specialversions.html" class="tsd-signature-type">SpecialVersions</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/znetstar/client-side-library-resolver/blob/3725032/src/Library.ts#L12">Library.ts:12</a></li>
+							<li>Defined in <a href="https://github.com/znetstar/client-side-library-resolver/blob/631b2aa/src/Library.ts#L50">Library.ts:50</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The version of the software to match against. Should be semver compatible (e.g. <code>1.0.0</code>, <code>1</code> or <code>latest</code>). Defaults to <code>latest</code>.</p>
+						</div>
+					</div>
 				</section>
 			</section>
 		</div>
@@ -204,10 +277,13 @@
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
 					<li class=" tsd-kind-enum tsd-parent-kind-external-module">
-						<a href="../enums/_library_.specialfiles.html" class="tsd-kind-icon">special<wbr>Files</a>
+						<a href="../enums/_library_.filetypes.html" class="tsd-kind-icon">File<wbr>Types</a>
 					</li>
 					<li class=" tsd-kind-enum tsd-parent-kind-external-module">
-						<a href="../enums/_library_.specialversions.html" class="tsd-kind-icon">special<wbr>Versions</a>
+						<a href="../enums/_library_.specialfiles.html" class="tsd-kind-icon">Special<wbr>Files</a>
+					</li>
+					<li class=" tsd-kind-enum tsd-parent-kind-external-module">
+						<a href="../enums/_library_.specialversions.html" class="tsd-kind-icon">Special<wbr>Versions</a>
 					</li>
 				</ul>
 				<ul class="current">
@@ -216,6 +292,9 @@
 						<ul>
 							<li class=" tsd-kind-constructor tsd-parent-kind-class">
 								<a href="_library_.library.html#constructor" class="tsd-kind-icon">constructor</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class">
+								<a href="_library_.library.html#filetype" class="tsd-kind-icon">file<wbr>Type</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
 								<a href="_library_.library.html#minifiedpath" class="tsd-kind-icon">minified<wbr>Path</a>

@@ -1,14 +1,13 @@
 import * as path from 'path';
 import * as request from 'request-promise-native';
 import * as chai from 'chai';
-import * as fs from 'fs-extra';
 import * as uglify from 'uglify-js';
 import * as chaiAsPromised from 'chai-as-promised';
 import * as Chance from 'chance';
-import * as lodash from 'lodash';
+import * as CleanCSS from 'clean-css';
 import unpkgRegistry from '../src/unpkgRegistry';
 import { LibraryDoesNotExist, NoMinifiedPath } from '../src/Registry';
-import Library, { specialFiles } from '../src/Library';
+import Library, { SpecialFiles, FileTypes } from '../src/Library';
 
 import 'mocha';
 
@@ -16,6 +15,8 @@ chai.use(chaiAsPromised);
 
 const modulesDir = path.join(__dirname, '..', 'node_modules');
 const chance = new Chance();
+
+const cleanCSS = new CleanCSS();
 
 const { assert } = chai;
 const pool = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -108,7 +109,7 @@ describe('unpkgRegistry', function () {
 
         it(`should throw LibraryDoesNotExist if a library is passed whose directory can be found, but version does not match the version requested`, async function () {
             const local = new unpkgRegistry();
-            const lib = new Library('jquery', chance.string({ length: 25, pool  }), specialFiles.mainFile, '/dist/jquery.min.js');
+            const lib = new Library('jquery', chance.string({ length: 25, pool  }), SpecialFiles.mainFile, '/dist/jquery.min.js');
 
             const p = local.getMinifiedPath(lib);
 
@@ -144,7 +145,7 @@ describe('unpkgRegistry', function () {
 
         it(`should throw LibraryDoesNotExist if a minified library is requested but the minified path does not exist`, async function () {
             const local = new unpkgRegistry();
-            const lib = new Library('jquery', 'latest', specialFiles.mainFile, chance.string({ length: 3 }));
+            const lib = new Library('jquery', 'latest', SpecialFiles.mainFile, chance.string({ length: 3 }));
 
             const p = local.getMinifiedPath(lib);
 
@@ -154,7 +155,7 @@ describe('unpkgRegistry', function () {
 
         it(`should return the minified path if it exists`, async function () {
             const local = new unpkgRegistry();
-            const lib = new Library('jquery', 'latest', specialFiles.mainFile, '/dist/jquery.min.js');
+            const lib = new Library('jquery', 'latest', SpecialFiles.mainFile, '/dist/jquery.min.js');
 
             const response = await request({
                 method: 'HEAD',
@@ -234,7 +235,7 @@ describe('unpkgRegistry', function () {
         this.timeout(10000);
         it('should return the minified library if the library exists at a given version', async function () {
             const local = new unpkgRegistry();
-            const lib = new Library('jquery', '3.4.1', specialFiles.mainFile, '/dist/jquery.min.js');
+            const lib = new Library('jquery', '3.4.1', SpecialFiles.mainFile, '/dist/jquery.min.js');
 
             const realJq = await request({
                 method: 'GET',
@@ -249,7 +250,7 @@ describe('unpkgRegistry', function () {
 
         it('should return the minified library if the library if no version is provided', async function () {
             const local = new unpkgRegistry();
-            const lib = new Library('jquery', void(0), specialFiles.mainFile, '/dist/jquery.min.js');
+            const lib = new Library('jquery', void(0), SpecialFiles.mainFile, '/dist/jquery.min.js');
 
             const realJq = await request({
                 method: 'GET',
@@ -264,7 +265,7 @@ describe('unpkgRegistry', function () {
 
         it('should return the minified library if the library if no minified path is provided but the main path is provided', async function () {
             const local = new unpkgRegistry();
-            const lib = new Library('jquery', '3.4.1', specialFiles.mainFile);
+            const lib = new Library('jquery', '3.4.1', SpecialFiles.mainFile);
 
             let realJq = await request({
                 method: 'GET',
@@ -311,6 +312,23 @@ describe('unpkgRegistry', function () {
             const result = await local.getMinified(lib);
 
             assert.equal(realJq, result);
+        });
+
+        it('should return the minified css', async function () {
+            const local = new unpkgRegistry([ modulesDir ]);
+            const lib = new Library('bootstrap', 'latest', '/dist/css/bootstrap.css', void(0), FileTypes.css);
+            
+            let realBs = await request({
+                method: 'GET',
+                url: 'https://unpkg.com/bootstrap/dist/css/bootstrap.css',
+                followAllRedirects: true
+            });
+
+            realBs = cleanCSS.minify(realBs).styles;
+
+            const result = await local.getMinified(lib);
+
+            assert.equal(realBs, result);
         });
     });
 });

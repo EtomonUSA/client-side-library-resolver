@@ -4,9 +4,10 @@ import * as fs from 'fs-extra';
 import * as uglify from 'uglify-js';
 import * as chaiAsPromised from 'chai-as-promised';
 import * as Chance from 'chance';
+import * as CleanCSS from 'clean-css';
 import LocalRegistry from '../src/LocalRegistry';
 import { LibraryDoesNotExist, VersionDoesNotMatch, NoMain, NoMinifiedPath } from '../src/Registry';
-import Library, { specialFiles, specialVersions } from '../src/Library';
+import Library, { SpecialFiles, SpecialVersions, FileTypes } from '../src/Library';
 
 import 'mocha';
 
@@ -15,6 +16,7 @@ chai.use(chaiAsPromised);
 const { assert } = chai;
 
 const chance = new Chance();
+const cleanCSS = new CleanCSS();
 
 const modulesDir = path.join(__dirname, '..', 'node_modules');
 
@@ -118,7 +120,7 @@ describe('LocalRegistry', function () {
 
         it(`should return the path to the library's main file by explicitly setting a path even if main does not exist or is not set`, async function () {
             const local = new LocalRegistry([ modulesDir ]);
-            const lib = new Library('socket.io-stream', specialVersions.latest, '/socket.io-stream.js');
+            const lib = new Library('socket.io-stream', SpecialVersions.latest, '/socket.io-stream.js');
 
             const result = await local.getPath(lib);
             const realPath = path.join(modulesDir, 'socket.io-stream', 'socket.io-stream.js');
@@ -140,7 +142,7 @@ describe('LocalRegistry', function () {
 
         it(`should throw VersionDoesNotMatch if a library is passed whose directory can be found, but version does not match the version requested`, async function () {
             const local = new LocalRegistry([ modulesDir ]);
-            const lib = new Library('jquery', chance.string({ length: 3 }), specialFiles.mainFile, '/dist/jquery.min.js');
+            const lib = new Library('jquery', chance.string({ length: 3 }), SpecialFiles.mainFile, '/dist/jquery.min.js');
 
             const p = local.getMinifiedPath(lib);
 
@@ -149,7 +151,7 @@ describe('LocalRegistry', function () {
 
         it(`should not throw VersionDoesNotMatch if a library is passed whose directory can be found, and the version is satisfied via semver`, async function () {
             const local = new LocalRegistry([ modulesDir ]);
-            const lib = new Library('jquery', '3', specialFiles.mainFile, '/dist/jquery.min.js');
+            const lib = new Library('jquery', '3', SpecialFiles.mainFile, '/dist/jquery.min.js');
 
             let fn = () => {};
 
@@ -183,7 +185,7 @@ describe('LocalRegistry', function () {
 
         it(`should throw LibraryDoesNotExist if a minified library is requested but the minified path does not exist`, async function () {
             const local = new LocalRegistry([ modulesDir ]);
-            const lib = new Library('jquery', 'latest', specialFiles.mainFile, chance.string({ length: 3 }));
+            const lib = new Library('jquery', 'latest', SpecialFiles.mainFile, chance.string({ length: 3 }));
 
             const p = local.getMinifiedPath(lib);
 
@@ -193,7 +195,7 @@ describe('LocalRegistry', function () {
 
         it(`should return the minified path if it exists`, async function () {
             const local = new LocalRegistry([ modulesDir ]);
-            const lib = new Library('jquery', 'latest', specialFiles.mainFile, '/dist/jquery.min.js');
+            const lib = new Library('jquery', 'latest', SpecialFiles.mainFile, '/dist/jquery.min.js');
 
             const libPath = await local.getMinifiedPath(lib);
             const realPath = path.join(modulesDir, 'jquery', 'dist', 'jquery.min.js')
@@ -251,7 +253,7 @@ describe('LocalRegistry', function () {
         this.timeout(10000);
         it('should return the minified library if the library exists at a given version', async function () {
             const local = new LocalRegistry([ modulesDir ]);
-            const lib = new Library('jquery', '3.4.1', specialFiles.mainFile, '/dist/jquery.min.js');
+            const lib = new Library('jquery', '3.4.1', SpecialFiles.mainFile, '/dist/jquery.min.js');
 
             const realJq = await fs.readFile(path.join(modulesDir, 'jquery', 'dist', 'jquery.min.js'), 'utf8');
 
@@ -262,7 +264,7 @@ describe('LocalRegistry', function () {
 
         it('should return the minified library if the library if no version is provided', async function () {
             const local = new LocalRegistry([ modulesDir ]);
-            const lib = new Library('jquery', void(0), specialFiles.mainFile, '/dist/jquery.min.js');
+            const lib = new Library('jquery', void(0), SpecialFiles.mainFile, '/dist/jquery.min.js');
 
             const realJq = await fs.readFile(path.join(modulesDir, 'jquery', 'dist', 'jquery.min.js'), 'utf8');
 
@@ -273,7 +275,7 @@ describe('LocalRegistry', function () {
 
         it('should return the minified library if the library if no minified path is provided but the main path is provided', async function () {
             const local = new LocalRegistry([ modulesDir ]);
-            const lib = new Library('jquery', '3.4.1', specialFiles.mainFile);
+            const lib = new Library('jquery', '3.4.1', SpecialFiles.mainFile);
 
             let realJq = await fs.readFile(path.join(modulesDir, 'jquery', 'dist', 'jquery.js'), 'utf8');
             realJq = uglify.minify(realJq).code;
@@ -295,7 +297,7 @@ describe('LocalRegistry', function () {
             assert.equal(realJq, result);
         });
 
-        it('should return the minified library if the library if no path and version is provided', async function () {
+        it('should return the minified library if no path and version is provided', async function () {
             const local = new LocalRegistry([ modulesDir ]);
             const lib = new Library('jquery', void(0), void(0), void(0));
 
@@ -305,6 +307,19 @@ describe('LocalRegistry', function () {
             const result = await local.getMinified(lib);
 
             assert.equal(realJq, result);
+        });
+
+
+        it('should return the minified css', async function () {
+            const local = new LocalRegistry([ modulesDir ]);
+            const lib = new Library('bootstrap', 'latest', 'dist/css/bootstrap.css', void(0), FileTypes.css);
+
+            let realBs = await fs.readFile(path.join(modulesDir, 'bootstrap', 'dist', 'css', 'bootstrap.css'), 'utf8');
+            realBs = cleanCSS.minify(realBs).styles;
+
+            const result = await local.getMinified(lib);
+
+            assert.equal(realBs, result);
         });
     });
 });

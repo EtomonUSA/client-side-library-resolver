@@ -1,7 +1,7 @@
 import * as request from 'request-promise-native';
 import { StatusCodeError } from 'request-promise-native/errors';
 import Registry, { LibraryDoesNotExist, VersionDoesNotMatch, NoMinifiedPath } from './Registry';
-import Library, { specialFiles, specialVersions } from './Library';
+import Library, { SpecialFiles, SpecialVersions } from './Library';
 
 /**
  * Represents the unpkg.com registry.
@@ -38,14 +38,14 @@ export default class unpkgRegistry extends Registry {
         let url;
         try {
             
-            if (lib.version === specialVersions.latest && lib.path === specialFiles.mainFile) {
+            if (lib.version === SpecialVersions.latest && lib.path === SpecialFiles.mainFile) {
                 url = `${this.unpkgUrlBase}/${lib.name}`;
-            } else if (lib.path === specialFiles.mainFile) {
+            } else if (lib.path === SpecialFiles.mainFile) {
                 url = `${this.unpkgUrlBase}/${lib.name}@${lib.version}`;
             } else {
                 const packageJson = await this.getManifest(lib);
 
-                let mainPath = (lib.path !== specialFiles.mainFile) ? lib.path : ('/' + packageJson.main);
+                let mainPath = (lib.path !== SpecialFiles.mainFile) ? lib.path : ('/' + packageJson.main);
                 url = `${this.unpkgUrlBase}/${lib.name}@${lib.version}${mainPath}`
             }
 

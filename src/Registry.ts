@@ -1,5 +1,6 @@
 import * as uglify from 'uglify-js';
-import { default as Library, specialFiles } from './Library';
+import * as CleanCSS from 'clean-css';
+import { default as Library, FileTypes } from './Library';
 
 export class NoMinifiedPath extends Error {
     constructor(public lib: Library) {
@@ -25,7 +26,17 @@ export class NoMain extends LibraryDoesNotExist {
     }
 }
 
+export class UnsupportedFileType extends Error {
+    constructor(fileType: FileTypes|string) {
+        super(`File type ${fileType} not supported.`)
+    }
+}
+
 export default abstract class Registry {
+    protected cleanCSS: CleanCSS.MinifierOutput;
+    constructor() {
+        this.cleanCSS = new CleanCSS();
+    }
     /**
      * Retrieves the the full path to a given library at a given version. Will use the file located at the `main` property of the `package.json` associated with the library if `lib.path` is not set.
      * 
@@ -57,6 +68,12 @@ export default abstract class Registry {
     public async getMinified(lib: Library): Promise<string> {
         const libText = await this.get(lib);
 
-        return uglify.minify(libText).code;
+        if (lib.fileType === FileTypes.js) {
+            return uglify.minify(libText).code;
+        } else if (lib.fileType === FileTypes.css) {
+            return this.cleanCSS.minify(libText).styles;
+        } else {
+            throw new UnsupportedFileType(lib.fileType);
+        }
     }
 }

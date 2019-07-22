@@ -19,3 +19,7 @@
 
 ## [1.1.1] - 2019-07-21
 -
+
+## [1.2.0] - 2019-07-21
+# Added
+- Adds support for CSS minifying, via the `Library.fileType` property.  

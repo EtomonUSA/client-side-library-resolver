@@ -3,7 +3,7 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as semver from 'semver';
 import Registry, { LibraryDoesNotExist, VersionDoesNotMatch, NoMain, NoMinifiedPath } from './Registry';
-import Library, { specialFiles, specialVersions } from './Library';
+import Library, { SpecialFiles, SpecialVersions } from './Library';
 
 /**
  * Represents the local `node_modules` folder or any other `node_modules` folder in the module path. 
@@ -53,12 +53,12 @@ export default class LocalRegistry extends Registry {
             throw new LibraryDoesNotExist(lib)
 
         
-        if ((typeof(lib.version) !== 'undefined' && lib.version !== specialVersions.latest) && !semver.satisfies(packageJson.version, lib.version)) {
+        if ((typeof(lib.version) !== 'undefined' && lib.version !== SpecialVersions.latest) && !semver.satisfies(packageJson.version, lib.version)) {
             throw new VersionDoesNotMatch(lib, packageJson.version);
         }
 
         const libPath = path.join(libDir, (
-            lib.path === specialFiles.mainFile ?
+            lib.path === SpecialFiles.mainFile ?
             packageJson.main :
             lib.path
         ));
@@ -83,7 +83,7 @@ export default class LocalRegistry extends Registry {
 
         const packageJson = await this.getManifest(lib);
 
-        if ((typeof(lib.version) !== 'undefined' && lib.version !== specialVersions.latest) && !semver.satisfies(packageJson.version, lib.version)) {
+        if ((typeof(lib.version) !== 'undefined' && lib.version !== SpecialVersions.latest) && !semver.satisfies(packageJson.version, lib.version)) {
             throw new VersionDoesNotMatch(lib, packageJson.version);
         }
 
