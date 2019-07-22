@@ -16,3 +16,6 @@
 ## [1.1.0] - 2019-07-21
 ### Added
 - `LocalRegistry` now uses `semver` to verify versions.
+
+## [1.1.1] - 2019-07-21
+-

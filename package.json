@@ -1,6 +1,6 @@
 {
   "name": "client-side-library-resolver",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Provides tools to seamlessly switch between sending CDN or locally stored modules to the browser.",
   "main": "lib/index.js",
   "scripts": {

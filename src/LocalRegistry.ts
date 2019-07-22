@@ -64,7 +64,7 @@ export default class LocalRegistry extends Registry {
         ));
 
 
-        if (!packageJson.main && !(await fs.pathExists(libPath))) {
+        if (!(await fs.pathExists(libPath))) {
             throw new NoMain(lib);
         }
 
