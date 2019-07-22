@@ -21,6 +21,7 @@ const { assert } = chai;
 const pool = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
 
 describe('unpkgRegistry', function () {
+    this.timeout(10000);
     describe('getManifest', function () {
         it('should throw LibraryDoesNotExist if the library provided is not in the modules folder', async function () {
             const local = new unpkgRegistry();

@@ -81,6 +81,21 @@ describe('LocalRegistry', function () {
             await assert.isRejected(p, VersionDoesNotMatch);
         });
 
+        it(`should not throw VersionDoesNotMatch if a library is passed whose directory can be found, and the version is satisfied via semver`, async function () {
+            const local = new LocalRegistry([ modulesDir ]);
+            const lib = new Library('jquery', '3');
+
+            let fn = () => {};
+
+            try {
+                await local.getPath(lib);
+            } catch (err) {
+                fn = () => { throw err; }
+            } finally {
+                assert.doesNotThrow(fn);
+            }
+        });
+        
         it(`should throw NoMain if a library is passed whose main file does not exist`, async function () {
             const local = new LocalRegistry([ modulesDir ]);
             const lib = new Library('socket.io-stream', 'latest', chance.string({ length: 3 }));
@@ -130,6 +145,21 @@ describe('LocalRegistry', function () {
             const p = local.getMinifiedPath(lib);
 
             await assert.isRejected(p, VersionDoesNotMatch);
+        });
+
+        it(`should not throw VersionDoesNotMatch if a library is passed whose directory can be found, and the version is satisfied via semver`, async function () {
+            const local = new LocalRegistry([ modulesDir ]);
+            const lib = new Library('jquery', '3', specialFiles.mainFile, '/dist/jquery.min.js');
+
+            let fn = () => {};
+
+            try {
+                await local.getMinifiedPath(lib);
+            } catch (err) {
+                fn = () => { throw err; }
+            } finally {
+                assert.doesNotThrow(fn);
+            }
         });
 
         it(`should return the path to the library's minified file`, async function () {
