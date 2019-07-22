@@ -6,7 +6,7 @@ import * as chaiAsPromised from 'chai-as-promised';
 import * as Chance from 'chance';
 import LocalRegistry from '../src/LocalRegistry';
 import { LibraryDoesNotExist, VersionDoesNotMatch, NoMain, NoMinifiedPath } from '../src/Registry';
-import Library, { specialFiles } from '../src/Library';
+import Library, { specialFiles, specialVersions } from '../src/Library';
 
 import 'mocha';
 
@@ -81,14 +81,15 @@ describe('LocalRegistry', function () {
             await assert.isRejected(p, VersionDoesNotMatch);
         });
 
-        it(`should throw LibraryDoesNotExist if a library is passed whose main file does not exist`, async function () {
+        it(`should throw NoMain if a library is passed whose main file does not exist`, async function () {
             const local = new LocalRegistry([ modulesDir ]);
-            const lib = new Library('jquery', 'latest', chance.string({ length: 3 }));
+            const lib = new Library('socket.io-stream', 'latest', chance.string({ length: 3 }));
 
             const p = local.getPath(lib);
 
-            await assert.isRejected(p, LibraryDoesNotExist);
+            await assert.isRejected(p, NoMain);
         });
+
 
         it(`should return the path to the library's main file`, async function () {
             const local = new LocalRegistry([ modulesDir ]);
@@ -96,6 +97,16 @@ describe('LocalRegistry', function () {
 
             const result = await local.getPath(lib);
             const realPath = path.join(modulesDir, 'jquery', 'dist', 'jquery.js');
+
+            assert.equal(realPath, result);
+        });
+
+        it(`should return the path to the library's main file by explicitly setting a path even if main does not exist or is not set`, async function () {
+            const local = new LocalRegistry([ modulesDir ]);
+            const lib = new Library('socket.io-stream', specialVersions.latest, '/socket.io-stream.js');
+
+            const result = await local.getPath(lib);
+            const realPath = path.join(modulesDir, 'socket.io-stream', 'socket.io-stream.js');
 
             assert.equal(realPath, result);
         });
