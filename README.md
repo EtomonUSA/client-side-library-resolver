@@ -1,3 +1,5 @@
+# ** DEPRECATED see - (https://bitbucket.org/etomon/client-side-library-resolver)[https://bitbucket.org/etomon/client-side-library-resolver] instead **
+
 # Client Side Library Resolver
 
 [![NPM](https://nodei.co/npm/client-side-library-resolver.png)](https://nodei.co/npm/client-side-library-resolver/)
